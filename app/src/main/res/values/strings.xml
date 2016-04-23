@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PruebaVideo</string>
+    <string name="video">Vídeo</string>
+    <string name="error_video">Error inicializando vídeo</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="volver">Volver</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salir_mensaje_advertencia">Todos los datos nuevos del formulario se perderán. ¿Está seguro?</string>
+    <string name="salir_mensaje_advertencia_video">Se detendrá la grabación y se salvarán todos los datos. ¿Está seguro?</string>
+    <string name="salir">Salir sin salvar</string>
+    <string name="salir_rec">Finalizar grabación</string>
+</resources>
