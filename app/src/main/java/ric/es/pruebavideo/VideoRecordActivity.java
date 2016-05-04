@@ -261,14 +261,8 @@ public class VideoRecordActivity extends FragmentActivity implements SurfaceHold
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             //https://support.google.com/youtube/answer/1722171?hl=en
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                recorder.setProfile(CamcorderProfile.get(0, CamcorderProfile.QUALITY_720P));
-                recorder.setVideoEncodingBitRate((1024 * 5) * 1024);
-            } else {
-                recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-                recorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
-                recorder.setVideoEncodingBitRate(1576 * 1024);
-                recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                recorder.setVideoSize(recResolution.first, recResolution.second);
+                recorder.setProfile(CamcorderProfile.get(0, CamcorderProfile.QUALITY_1080P));
+//                recorder.setVideoEncodingBitRate((1024 * 5) * 1024);
             }
             recorder.setPreviewDisplay(holder.getSurface());
             recorder.setOutputFile(videoFile);
