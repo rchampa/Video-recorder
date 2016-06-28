@@ -1,11 +1,13 @@
 package ric.es.pruebavideo;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -20,7 +22,6 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class VideoRecordActivity extends FragmentActivity implements SurfaceHolder.Callback {
+public class VideoRActivity extends FragmentActivity implements SurfaceHolder.Callback {
 
     public static final int MAX_VIDEO_WIDTH = 1280;
     public static final float ASPECT = 16f / 9f;
@@ -72,6 +73,8 @@ public class VideoRecordActivity extends FragmentActivity implements SurfaceHold
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.eje_calzada_rec);
+
+        verifyStoragePermissions();
 
         ButterKnife.inject(this);
 
@@ -127,7 +130,7 @@ public class VideoRecordActivity extends FragmentActivity implements SurfaceHold
     public void onClickRec(final View v) {
 
         if(recording){
-            Toast.makeText(VideoRecordActivity.this, "Ya estás grabando", Toast.LENGTH_SHORT).show();
+            Toast.makeText(VideoRActivity.this, "Ya estás grabando", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -257,15 +260,16 @@ public class VideoRecordActivity extends FragmentActivity implements SurfaceHold
             //http://joerg-richter.fuyosoft.com/?p=127
 
             recorder.setCamera(camera);
+            recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
             recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             //https://support.google.com/youtube/answer/1722171?hl=en
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                recorder.setProfile(CamcorderProfile.get(0, CamcorderProfile.QUALITY_1080P));
-//                recorder.setVideoEncodingBitRate((1024 * 5) * 1024);
-            }
-            recorder.setPreviewDisplay(holder.getSurface());
+//            recorder.setProfile(CamcorderProfile.get(0, CamcorderProfile.QUALITY_1080P));
+            recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
             recorder.setOutputFile(videoFile);
+//            recorder.setVideoFrameRate(24);//30fps falla con menos
+
+            recorder.setPreviewDisplay(holder.getSurface());
+
             recorder.setMaxDuration((int) TimeUnit.HOURS.toMillis(2));
 
             recorder.prepare();
@@ -352,6 +356,36 @@ public class VideoRecordActivity extends FragmentActivity implements SurfaceHold
             result = (info.orientation - degrees + 360) % 360;
         }
         camera.setDisplayOrientation(result);
+    }
+
+
+
+
+    //Android 6.0
+    // Storage Permissions variables
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    //persmission method.
+    public void verifyStoragePermissions() {
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            // Check if we have read or write permission
+            int writePermission = this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            int readPermission = this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+
+            if (writePermission != PackageManager.PERMISSION_GRANTED || readPermission != PackageManager.PERMISSION_GRANTED) {
+                // We don't have permission so prompt the user
+                this.requestPermissions(
+                        PERMISSIONS_STORAGE,
+                        REQUEST_EXTERNAL_STORAGE
+                );
+            }
+        }
+
     }
 
 }
